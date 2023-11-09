@@ -1,0 +1,17 @@
+---
+- hosts: Windows
+  gather_facts: false
+  tasks:
+  - ansible.windows.win_ping:
+
+  - ansible.windows.win_shell: whoami
+
+  - name: download update file
+    win_get_url:
+      dest: "{{ update_file_path }}"
+      url: "{{ update_file_url }}"
+    register: download_update
+    until: download_update is success
+    delay: 3
+    retries: 5
+    when: (":" in update_file_path) and (not update_file.stat.exists)
