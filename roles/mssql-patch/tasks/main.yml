@@ -45,7 +45,7 @@
 
 - name: patch status
   debug:
-    msg: "{{ patch_version }} vs {{ sql_server_version }}"
+    msg: "Current version:  {{ sql_server_version }} vs Patch version: {{ patch_version }}"
 
 - name: verify patch version
   set_fact:
