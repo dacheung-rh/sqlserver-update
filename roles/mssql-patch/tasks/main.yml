@@ -43,14 +43,9 @@
 
 - include_tasks: check_version.yml
 
-- name: patch status
+- name: patch check
   debug:
-    msg: "Current version:  {{ sql_server_version }} vs Patch version: {{ patch_version }}"
-
-- name: verify patch version
-  set_fact:
-    exec_patch: true
-  when: patch_version > sql_server_version
+    msg: "Current patch level:  {{ sql_server_patchlevel }} / Target patch version: {{ patch_build_version }}"
 
 - name: patch sql server version
   block:
@@ -87,9 +82,9 @@
       ansible.windows.win_file:
         path: "{{ update_file_path }}"
         state: absent
-  when: exec_patch
+  when: patch_build_version > sql_server_patchlevel
 
 - name: patch status
   debug:
     msg: "No patch required."
-  when: not exec_patch
+  when: not (patch_build_version > sql_server_patchlevel)

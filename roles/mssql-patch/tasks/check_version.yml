@@ -26,7 +26,8 @@
   set_fact:
     sql_server_edition: "{{ sql_server_instance_information.results[0].properties.Edition.value }}"
     sql_server_version: "{{ sql_server_instance_information.results[0].properties.Version.value }}"
+    sql_server_patchlevel: "{{ sql_server_instance_information.results[0].properties.PatchLevel.value }}"
 
 - name: show sql server version
   debug:
-    msg: "SQL server: {{ sql_server_edition }} - {{ sql_server_version }}"
+    msg: "SQL server: {{ sql_server_edition }} - {{ sql_server_version }} - {{ sql_server_patchlevel }}"
