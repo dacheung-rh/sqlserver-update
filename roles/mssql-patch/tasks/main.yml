@@ -20,7 +20,7 @@
 
 - include_tasks: check_disksize.yml
 
-- name: debug
+- name: debug file path
   debug:
     msg: "{{ update_file_path }}"
 
@@ -43,36 +43,53 @@
 
 - include_tasks: check_version.yml
 
-# - name: Stop sqlserver and set service startup mode to manual
-  # ansible.windows.win_service:
-    # name: MSSQLSERVER
-    # start_mode: manual
-    # state: stopped
+- name: patch status
+  debug:
+    msg: "{{ patch_version }} vs {{ sql_server_version }}"
 
-# - name: Reboot windows machine with 300 sec timeout
-  # ansible.windows.win_reboot:
-    # reboot_timeout: 300
- 
-- name: patch SQL Server
-  win_package:
-    path: '{{ update_file_path }}'
-    arguments:
-      - /Q
-      - /quiet
-      - /IAcceptSQLServerLicenseTerms
-      - /Action=Patch
-      - /AllInstances
-  register: sql_update
+- name: verify patch version
+  set_fact:
+    exec_patch: true
+  when: patch_version > sql_server_version
 
-- name: Start sqlserver and set service startup mode to auto
-  ansible.windows.win_service:
-    name: MSSQLSERVER
-    start_mode: auto
-    state: started
+- name: patch sql server version
+  block:
+    - name: Stop sqlserver and set service startup mode to manual
+      ansible.windows.win_service:
+        name: MSSQLSERVER
+        start_mode: manual
+        state: stopped
+
+    - name: Reboot windows machine with 300 sec timeout
+      ansible.windows.win_reboot:
+        reboot_timeout: 300
     
-- include_tasks: check_version.yml
+    - name: patch SQL Server
+      win_package:
+        path: '{{ update_file_path }}'
+        arguments:
+          - /Q
+          - /quiet
+          - /IAcceptSQLServerLicenseTerms
+          - /Action=Patch
+          - /AllInstances
+      register: sql_update
 
-# - name: remove sqlserver patch file
-  # ansible.windows.win_file:
-    # path: "{{ update_file_path }}"
-    # state: absent
+    - name: Start sqlserver and set service startup mode to auto
+      ansible.windows.win_service:
+        name: MSSQLSERVER
+        start_mode: auto
+        state: started
+        
+    - include_tasks: check_version.yml
+
+    - name: remove sqlserver patch file
+      ansible.windows.win_file:
+        path: "{{ update_file_path }}"
+        state: absent
+  when: exec_patch
+
+- name: patch status
+  debug:
+    msg: "No patch required."
+  when: not exec_patch

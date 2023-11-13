@@ -1,3 +1,5 @@
 ---
 patch_path: 'C:\patch'
 patch_file: 'SQLServer2019-KB5030333-x64.exe'
+patch_version: '15.0.2000.5'
+exec_patch: false
