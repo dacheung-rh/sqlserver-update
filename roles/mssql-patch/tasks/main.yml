@@ -25,21 +25,21 @@
     msg: "{{ update_file_path }}"
 
 ## temp copy patch file for testing ##
-- name: Copy sql patch file
-  ansible.windows.win_copy:
-    src: files/SQLServer2019-KB5030333-x64.exe
-    dest: "{{ patch_path }}"
-  when: (":" in update_file_path) and (not update_file.stat.exists)
+# - name: Copy sql patch file
+#   ansible.windows.win_copy:
+#     src: files/SQLServer2019-KB5030333-x64.exe
+#     dest: "{{ patch_path }}"
+#   when: (":" in update_file_path) and (not update_file.stat.exists)
 
-# - name: download update file
-  # win_get_url:
-    # dest: "{{ update_file_path }}"
-    # url: "{{ update_file_url }}"
-  # register: download_update
-  # until: download_update is success
-  # delay: 3
-  # retries: 5
-  # when: (":" in update_file_path) and (not update_file.stat.exists)
+- name: download update file
+  win_get_url:
+    dest: "{{ update_file_path }}"
+    url: "{{ update_file_url }}"
+  register: download_update
+  until: download_update is success
+  delay: 3
+  retries: 5
+  when: (":" in update_file_path) and (not update_file.stat.exists)
 
 - include_tasks: check_version.yml
 
