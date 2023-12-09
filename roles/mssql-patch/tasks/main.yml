@@ -31,17 +31,21 @@
 #     dest: "{{ patch_path }}"
 #   when: (":" in update_file_path) and (not update_file.stat.exists)
 
-- name: download update file
-  win_get_url:
-    dest: "{{ update_file_path }}"
-    url: "{{ update_file_url }}"
-  register: download_update
-  until: download_update is success
-  delay: 3
-  retries: 5
-  when: (":" in update_file_path) and (not update_file.stat.exists)
+# - name: download update file
+#   win_get_url:
+#     dest: "{{ update_file_path }}"
+#     url: "{{ update_file_url }}"
+#   register: download_update
+#   until: download_update is success
+#   delay: 3
+#   retries: 5
+#   when: (":" in update_file_path) and (not update_file.stat.exists)
+
 
 - include_tasks: check_version.yml
+
+- include_tasks: win_download.yml
+  when: patch_build_version > sql_server_patchlevel
 
 - name: patch check
   debug:
