@@ -4,10 +4,10 @@
     storageAccountName: "{{ storageAccountName }}"
     storageAccountKey: "{{ storageAccountKey }}"
     containerName: "{{ containerName }}"
-    blobName: "{{ blobName }}"
-    destinationPath: "{{ destinationPath }}"
+    blobName: "{{ patch_file }}"
+    destinationPath: "{{ patch_path }}"
 
 - name: Check if the file download success
   ansible.windows.win_stat:
-    path: "{{ destinationPath }}\\{{ blobName }}"
+    path: "{{ patch_path }}\\{{ patch_file }}"
   register: file_info

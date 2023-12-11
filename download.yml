@@ -19,15 +19,20 @@
     # - name: Run powershell script
     #   win_shell: "C:\\Temp\\blobfiledownload.ps1 {{ storageAccountName }} {{ storageAccountKey }} {{ containerName }} {{ blobName }} {{ destinationPath }}"
 
+    - name: Create directory structure
+      ansible.windows.win_file:
+        path: "{{ patch_path }}"
+        state: directory
+
     - name: Dowload file from blob container
       blob_download:
         storageAccountName: "{{ storageAccountName }}"
         storageAccountKey: "{{ storageAccountKey }}"
         containerName: "{{ containerName }}"
-        blobName: "{{ blobName }}"
-        destinationPath: "{{ destinationPath }}"
+        blobName: "{{ patch_file }}"
+        destinationPath: "{{ patch_path }}"
 
     - name: Check if the file download success
       ansible.windows.win_stat:
-        path: "{{ destinationPath }}\\{{ blobName }}"
+        path: "{{ patch_path }}\\{{ patch_file }}"
       register: file_info
