@@ -42,9 +42,9 @@
 #   when: (":" in update_file_path) and (not update_file.stat.exists)
 
 
-- include_tasks: check_version.yml
+- import_tasks: check_version.yml
 
-- include_tasks: win_download.yml
+- import_tasks: win_download.yml
   when: patch_build_version > sql_server_patchlevel
 
 - name: patch check
@@ -74,13 +74,17 @@
           - /AllInstances
       register: sql_update
 
+    - name: Reboot windows machine with 300 sec timeout
+      ansible.windows.win_reboot:
+        reboot_timeout: 300
+
     - name: Start sqlserver and set service startup mode to auto
       ansible.windows.win_service:
         name: MSSQLSERVER
         start_mode: auto
         state: started
         
-    - include_tasks: check_version.yml
+    - import_tasks: check_version.yml
 
     - name: remove sqlserver patch file
       ansible.windows.win_file:
