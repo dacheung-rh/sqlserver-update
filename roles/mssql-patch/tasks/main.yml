@@ -83,7 +83,7 @@
         name: MSSQLSERVER
         start_mode: auto
         state: started
-        
+
     - import_tasks: check_version.yml
 
     - name: remove sqlserver patch file
@@ -91,6 +91,8 @@
         path: "{{ update_file_path }}"
         state: absent
   when: patch_build_version > sql_server_patchlevel
+
+- import_tasks: check_version.yml
 
 - name: patch status
   debug:
